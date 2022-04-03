@@ -12,6 +12,9 @@
 // include all libraries
 #include <bits/stdc++.h>
 
+
+using namespace std;
+
 // library  for manipulate images
 #include "bmplib.cpp"
 
@@ -21,6 +24,29 @@ void load();
 void save();
 
 
+// image that will be process
+unsigned char image[SIZE][SIZE];
+
 int main(){
-    
+    load();
+}
+
+// load image to 2d array in memory
+void load(){
+
+    char fileName[100]; 
+    fstream file;
+
+    // loop until user enter valid image 
+    do{
+        cout << "Enter picture: ";
+        cin >> fileName;
+
+        //append bmp to the end of filename 
+        strcat(fileName, ".bmp");
+        //see if the image exists or not
+        file.open(fileName);
+    }while(!file);
+        
+    readGSBMP(fileName, image);    
 }
