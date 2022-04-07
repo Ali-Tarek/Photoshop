@@ -226,7 +226,7 @@ void merge()
 
     do
     {
-        cout << "please enter file name of the second image that you want to merge: ";
+        cout << "Please enter name of image file to merge with: ";
         cin >> fileName2;
 
         strcat(fileName2, ".bmp");
