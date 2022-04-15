@@ -27,6 +27,8 @@ void invert();
 void flip(char direction);
 void rotate(string degree);
 void cpyToImage(unsigned char image[][SIZE]);
+void cutImage(int quarter, unsigned char fillImage[][SIZE/2]);
+void enlarge();
 
 // image that will be process
 unsigned char image[SIZE][SIZE];
@@ -134,6 +136,9 @@ void applyFilter(int choice)
         rotate(degree);
     }
     break;
+    case '8':
+        enlarge();
+        break;
     case 's':
         save();
         break;
@@ -341,3 +346,83 @@ void rotate(string degree)
 
     cpyToImage(rotatedImage);
 }
+
+// cut image to corrspond quarter and fill the image given
+void cutImage(int quarter, unsigned char fillImage[][SIZE/2]){
+    // corrdinate to cut image
+    int startRow, endRow, startCol, endCol;
+
+    // choose start and end for row and col based on quarter
+    if( quarter == 1){
+        startRow = 0;
+        endRow = SIZE / 2;
+        startCol = 0;
+        endCol = SIZE / 2 ;
+    }else if( quarter == 2){
+        startRow = 0;
+        endRow = SIZE;
+        startCol = SIZE / 2 ;
+        endCol = SIZE;
+    }else if( quarter == 3){
+        startRow = SIZE / 2;
+        endRow = SIZE;
+        startCol = 0;
+        endCol = SIZE / 2;
+    }else if( quarter == 4){
+        startRow = SIZE / 2;
+        endRow = SIZE;
+        startCol = SIZE / 2;
+        endCol = SIZE;
+    }
+
+
+    // fill given image
+    for(int i=startRow, rowIndex=0; i<endRow; i++){
+        for(int j=startCol, colIndex=0; j<endCol; j++){
+
+            fillImage[rowIndex][colIndex] = image[i][j];
+        
+        colIndex++; // increment col in fillImage
+        }
+        rowIndex++; // increment row in fillImage
+    }
+    
+}
+
+// enlarge quarter from image
+void enlarge(){
+    // take quarter pos from user
+    int quarter; 
+    cout << "Which quarter to enlarge 1, 2, 3 or 4?";
+    cin >> quarter;
+    
+    // validate user input
+    if( quarter > 4 || quarter < 1){
+        cout << "invalid quarter\n";
+        enlarge();
+    }
+    
+    unsigned char quarterImage[SIZE/2][SIZE/2];
+
+
+    cutImage(quarter, quarterImage);
+
+
+    for(int i=0, rowIndex =0; i<SIZE/2; i++){
+        for(int j=0, colIndex=0; j<SIZE/2; j++){
+
+            // duplicate pixel 
+            image[rowIndex][colIndex] = quarterImage[i][j];
+            image[rowIndex+1][colIndex] = quarterImage[i][j];
+            image[rowIndex][colIndex+1] = quarterImage[i][j];
+            image[rowIndex+1][colIndex+1] = quarterImage[i][j];
+
+            colIndex += 2;
+        }
+
+        rowIndex += 2;
+    }
+    
+
+}
+
