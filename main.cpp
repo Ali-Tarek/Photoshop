@@ -29,6 +29,7 @@ void rotate(string degree);
 void cpyToImage(unsigned char image[][SIZE]);
 void cutImage(int quarter, unsigned char fillImage[][SIZE/2]);
 void enlarge();
+void shuffle();
 
 // image that will be process
 unsigned char image[SIZE][SIZE];
@@ -138,6 +139,9 @@ void applyFilter(int choice)
     break;
     case '8':
         enlarge();
+        break;
+    case 'b':
+        shuffle();
         break;
     case 's':
         save();
@@ -353,27 +357,10 @@ void cutImage(int quarter, unsigned char fillImage[][SIZE/2]){
     int startRow, endRow, startCol, endCol;
 
     // choose start and end for row and col based on quarter
-    if( quarter == 1){
-        startRow = 0;
-        endRow = SIZE / 2;
-        startCol = 0;
-        endCol = SIZE / 2 ;
-    }else if( quarter == 2){
-        startRow = 0;
-        endRow = SIZE;
-        startCol = SIZE / 2 ;
-        endCol = SIZE;
-    }else if( quarter == 3){
-        startRow = SIZE / 2;
-        endRow = SIZE;
-        startCol = 0;
-        endCol = SIZE / 2;
-    }else if( quarter == 4){
-        startRow = SIZE / 2;
-        endRow = SIZE;
-        startCol = SIZE / 2;
-        endCol = SIZE;
-    }
+    startRow    = quarter == 1 || quarter == 2 ? 0 : SIZE / 2;
+    endRow      = quarter == 1 || quarter == 2 ? SIZE / 2 : SIZE;
+    startCol    = quarter == 1 || quarter == 3 ? 0 : SIZE / 2 ;
+    endCol      = quarter == 1 || quarter == 3 ? SIZE / 2 : SIZE; 
 
 
     // fill given image
@@ -391,16 +378,16 @@ void cutImage(int quarter, unsigned char fillImage[][SIZE/2]){
 
 // enlarge quarter from image
 void enlarge(){
-    // take quarter pos from user
-    int quarter; 
-    cout << "Which quarter to enlarge 1, 2, 3 or 4?";
-    cin >> quarter;
-    
+
+    int quarter = 0; 
+       
     // validate user input
-    if( quarter > 4 || quarter < 1){
-        cout << "invalid quarter\n";
-        enlarge();
+    while ( quarter > 4 || quarter < 1){
+        // take quarter pos from user
+         cout << "Which quarter to enlarge 1, 2, 3 or 4 ? ";
+         cin >> quarter;
     }
+
     
     unsigned char quarterImage[SIZE/2][SIZE/2];
 
@@ -422,7 +409,54 @@ void enlarge(){
 
         rowIndex += 2;
     }
-    
 
 }
 
+// shuffle the order of four quarters of image 
+void shuffle(){
+
+    // order of suffle
+    int order[4];    
+
+    // get order from user
+    cout << "New order of quarters ? ";
+    for(int i=0; i<4; i++){
+        cin >> order[i];
+        if( order[i] > 4 || order[i] < 1){
+            cout << "reject\n";
+            return;
+        }
+    }
+
+    // all quarters of image
+    vector<unsigned char[SIZE/2][SIZE/2]>quarterImages(4);
+
+    // get quarters of image
+    for(int i=0; i<quarterImages.size(); i++){
+        cutImage(order[i], quarterImages[i]);
+    }
+
+    int rowIndex, colIndex;
+    for(int i=0; i<4; i++){ // loop on quartersImage
+
+        // avoid overflow 
+        rowIndex = i == 0 || i == 1  ? 0 : SIZE / 2;
+
+        //fiil image with quarter in order
+        for(int j=0; j<SIZE/2; j++){
+
+            // avoid overflow
+            colIndex = i == 0 || i == 2  ? 0 : SIZE / 2;
+
+            for(int k=0; k<SIZE/2; k++){
+                image[rowIndex][colIndex] = quarterImages[i][j][k];
+                colIndex++;
+            }
+            rowIndex++;
+        }
+    }
+    
+
+
+
+}
