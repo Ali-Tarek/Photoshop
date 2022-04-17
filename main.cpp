@@ -5,7 +5,7 @@
  * Author1 and ID and Group:  Mohamed Wael Mohamed      20210361    S21
  * Author2 and ID and Group:  Ali Tarek Mohamed         20210245    S21
  * Author3 and ID anf Group:  Omar Mohamed Gamal        20210270    S21
- * Teaching Assistant:
+ * Teaching Assistant:  Abdulrahman Abdulmonem
  * Purpose: This is photoshop console app
  */
 
@@ -26,10 +26,17 @@ void invert();
 void merge();
 void flip(char direction);
 void rotate(string degree);
+<<<<<<< HEAD
 void Darken_and_Lighten_Image(char);
 void shrink_image(string size);
 void blur();
 
+=======
+void cpyToImage(unsigned char image[][SIZE]);
+void cutImage(int quarter, unsigned char fillImage[][SIZE/2]);
+void enlarge();
+void shuffle();
+>>>>>>> 37c88eb603a0106231a89fe478ad1fbcc9d01567
 
 // image that will be process
 unsigned char image[SIZE][SIZE];
@@ -91,6 +98,92 @@ void load()
 }
 
 
+<<<<<<< HEAD
+=======
+    cout << "Please select a filter to apply or 0 to exit: \n";
+    cout << "1- Black & white Filter\n";
+    cout << "2- Invert Filter\n";
+    cout << "3- Merge Filter\n";
+    cout << "4- Flip Image\n";
+    cout << "5- Darken and Lightern Image\n";
+    cout << "6- Rotate Image\n";
+    cout << "7- Detect Image Edges\n";
+    cout << "8- Enlarge Image\n";
+    cout << "9- Shrink Image\n";
+    cout << "a- Mirror 1/2 Image\n";
+    cout << "b- Shuffle Image\n";
+    cout << "c- Blur Image\n";
+    cout << "s- Save the image to a file\n";
+    cout << "0- Exit\n";
+
+    // filter to apply
+    char choice;
+    cout << ">> ";
+    cin >> choice;
+
+    return tolower(choice);
+}
+
+// call filter
+void applyFilter(int choice)
+{
+
+    switch (choice)
+    {
+    case '1':
+        blackWhite();
+        break;
+
+    case '5':
+        char contrast;
+        cout << "Contrast (D)arken or (L)ighten: ";
+        cin >> contrast;
+        Darken_and_Lighten_Image(contrast);
+        break;
+    case '0':
+        cout << "GOODBYE :)\n";
+        exit(0);
+        break;
+    case '4':
+        char direction;
+        cout << "Flip (H)orizontally or (V)ertically: "; // take direction from user
+        cin >> direction;
+        flip(direction);
+        break;
+
+    case '3':
+        merge();
+        break;
+    case '2':
+        invert();
+        break;
+    case '6':
+    {
+        string degree;
+        cout << "Rotate (90), (180) or (270) degrees?: ";
+        cin >> degree;
+        rotate(degree);
+    }
+    break;
+    case '8':
+        enlarge();
+        break;
+    case 'b':
+        shuffle();
+        break;
+    case 's':
+        save();
+        break;
+    default:
+        cout << "Not available Filter\n";
+        break;
+        // filter to apply
+        char choice;
+        cout << ">> ";
+        cin >> choice;
+    }
+}
+>>>>>>> 37c88eb603a0106231a89fe478ad1fbcc9d01567
 
 void save()
 {
@@ -375,6 +468,7 @@ void rotate(string degree)
     cpyToImage(rotatedImage);
 }
 
+<<<<<<< HEAD
 void shrink_image(string size)
 {
     unsigned char shrinked_image[SIZE][SIZE];
@@ -461,3 +555,114 @@ void blur()
     cpyToImage(blurred_image);
 
 }
+=======
+// cut image to corrspond quarter and fill the image given
+void cutImage(int quarter, unsigned char fillImage[][SIZE/2]){
+    // corrdinate to cut image
+    int startRow, endRow, startCol, endCol;
+
+    // choose start and end for row and col based on quarter
+    startRow    = quarter == 1 || quarter == 2 ? 0 : SIZE / 2;
+    endRow      = quarter == 1 || quarter == 2 ? SIZE / 2 : SIZE;
+    startCol    = quarter == 1 || quarter == 3 ? 0 : SIZE / 2 ;
+    endCol      = quarter == 1 || quarter == 3 ? SIZE / 2 : SIZE; 
+
+
+    // fill given image
+    for(int i=startRow, rowIndex=0; i<endRow; i++){
+        for(int j=startCol, colIndex=0; j<endCol; j++){
+
+            fillImage[rowIndex][colIndex] = image[i][j];
+        
+        colIndex++; // increment col in fillImage
+        }
+        rowIndex++; // increment row in fillImage
+    }
+    
+}
+
+// enlarge quarter from image
+void enlarge(){
+
+    int quarter = 0; 
+       
+    // validate user input
+    while ( quarter > 4 || quarter < 1){
+        // take quarter pos from user
+         cout << "Which quarter to enlarge 1, 2, 3 or 4 ? ";
+         cin >> quarter;
+    }
+
+    
+    unsigned char quarterImage[SIZE/2][SIZE/2];
+
+
+    cutImage(quarter, quarterImage);
+
+
+    for(int i=0, rowIndex =0; i<SIZE/2; i++){
+        for(int j=0, colIndex=0; j<SIZE/2; j++){
+
+            // duplicate pixel 
+            image[rowIndex][colIndex] = quarterImage[i][j];
+            image[rowIndex+1][colIndex] = quarterImage[i][j];
+            image[rowIndex][colIndex+1] = quarterImage[i][j];
+            image[rowIndex+1][colIndex+1] = quarterImage[i][j];
+
+            colIndex += 2;
+        }
+
+        rowIndex += 2;
+    }
+
+}
+
+// shuffle the order of four quarters of image 
+void shuffle(){
+
+    // order of suffle
+    int order[4];    
+
+    // get order from user
+    cout << "New order of quarters ? ";
+    for(int i=0; i<4; i++){
+        cin >> order[i];
+        if( order[i] > 4 || order[i] < 1){
+            cout << "reject\n";
+            return;
+        }
+    }
+
+    // all quarters of image
+    vector<unsigned char[SIZE/2][SIZE/2]>quarterImages(4);
+
+    // get quarters of image
+    for(int i=0; i<quarterImages.size(); i++){
+        cutImage(order[i], quarterImages[i]);
+    }
+
+    int rowIndex, colIndex;
+    for(int i=0; i<4; i++){ // loop on quartersImage
+
+        // avoid overflow 
+        rowIndex = i == 0 || i == 1  ? 0 : SIZE / 2;
+
+        //fiil image with quarter in order
+        for(int j=0; j<SIZE/2; j++){
+
+            // avoid overflow
+            colIndex = i == 0 || i == 2  ? 0 : SIZE / 2;
+
+            for(int k=0; k<SIZE/2; k++){
+                image[rowIndex][colIndex] = quarterImages[i][j][k];
+                colIndex++;
+            }
+            rowIndex++;
+        }
+    }
+    
+
+
+
+}
+>>>>>>> 37c88eb603a0106231a89fe478ad1fbcc9d01567
