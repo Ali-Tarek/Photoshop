@@ -26,17 +26,10 @@ void invert();
 void merge();
 void flip(char direction);
 void rotate(string degree);
-<<<<<<< HEAD
 void Darken_and_Lighten_Image(char);
 void shrink_image(string size);
 void blur();
 
-=======
-void cpyToImage(unsigned char image[][SIZE]);
-void cutImage(int quarter, unsigned char fillImage[][SIZE/2]);
-void enlarge();
-void shuffle();
->>>>>>> 37c88eb603a0106231a89fe478ad1fbcc9d01567
 
 // image that will be process
 unsigned char image[SIZE][SIZE];
@@ -98,92 +91,6 @@ void load()
 }
 
 
-<<<<<<< HEAD
-=======
-    cout << "Please select a filter to apply or 0 to exit: \n";
-    cout << "1- Black & white Filter\n";
-    cout << "2- Invert Filter\n";
-    cout << "3- Merge Filter\n";
-    cout << "4- Flip Image\n";
-    cout << "5- Darken and Lightern Image\n";
-    cout << "6- Rotate Image\n";
-    cout << "7- Detect Image Edges\n";
-    cout << "8- Enlarge Image\n";
-    cout << "9- Shrink Image\n";
-    cout << "a- Mirror 1/2 Image\n";
-    cout << "b- Shuffle Image\n";
-    cout << "c- Blur Image\n";
-    cout << "s- Save the image to a file\n";
-    cout << "0- Exit\n";
-
-    // filter to apply
-    char choice;
-    cout << ">> ";
-    cin >> choice;
-
-    return tolower(choice);
-}
-
-// call filter
-void applyFilter(int choice)
-{
-
-    switch (choice)
-    {
-    case '1':
-        blackWhite();
-        break;
-
-    case '5':
-        char contrast;
-        cout << "Contrast (D)arken or (L)ighten: ";
-        cin >> contrast;
-        Darken_and_Lighten_Image(contrast);
-        break;
-    case '0':
-        cout << "GOODBYE :)\n";
-        exit(0);
-        break;
-    case '4':
-        char direction;
-        cout << "Flip (H)orizontally or (V)ertically: "; // take direction from user
-        cin >> direction;
-        flip(direction);
-        break;
-
-    case '3':
-        merge();
-        break;
-    case '2':
-        invert();
-        break;
-    case '6':
-    {
-        string degree;
-        cout << "Rotate (90), (180) or (270) degrees?: ";
-        cin >> degree;
-        rotate(degree);
-    }
-    break;
-    case '8':
-        enlarge();
-        break;
-    case 'b':
-        shuffle();
-        break;
-    case 's':
-        save();
-        break;
-    default:
-        cout << "Not available Filter\n";
-        break;
-        // filter to apply
-        char choice;
-        cout << ">> ";
-        cin >> choice;
-    }
-}
->>>>>>> 37c88eb603a0106231a89fe478ad1fbcc9d01567
 
 void save()
 {
@@ -468,7 +375,6 @@ void rotate(string degree)
     cpyToImage(rotatedImage);
 }
 
-<<<<<<< HEAD
 void shrink_image(string size)
 {
     unsigned char shrinked_image[SIZE][SIZE];
@@ -555,7 +461,6 @@ void blur()
     cpyToImage(blurred_image);
 
 }
-=======
 // cut image to corrspond quarter and fill the image given
 void cutImage(int quarter, unsigned char fillImage[][SIZE/2]){
     // corrdinate to cut image
@@ -665,4 +570,3 @@ void shuffle(){
 
 
 }
->>>>>>> 37c88eb603a0106231a89fe478ad1fbcc9d01567
