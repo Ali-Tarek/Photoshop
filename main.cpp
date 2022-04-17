@@ -1,4 +1,4 @@
-/**
+/*
  * FCAI - programming 1 - 2022 - Assignment 3
  * Program Name :  mian.cpp
  * Last Modification Date : 02/4/2022
@@ -15,18 +15,21 @@
 
 using namespace std;
 
-// functions declarations
+// functions' prototypes declarations
 char displayMenu();
 void load();
 void save();
+void cpyToImage(unsigned char image[][SIZE]);
 void applyFilter(int choice);
 void blackWhite();
-void Darken_and_Lighten_Image(char);
-void merge();
 void invert();
+void merge();
 void flip(char direction);
 void rotate(string degree);
-void cpyToImage(unsigned char image[][SIZE]);
+void Darken_and_Lighten_Image(char);
+void shrink_image(string size);
+void blur();
+
 
 // image that will be process
 unsigned char image[SIZE][SIZE];
@@ -39,15 +42,37 @@ int main()
 
     while (true)
     {
-        // pass choice of user to applyfilter
-        applyFilter(displayMenu());
+        applyFilter(displayMenu()); // pass choice of user to applyfilter
     }
 }
+
+// create menu for user
+char displayMenu()
+{
+    cout << "Please select a filter to apply or 0 to exit: \n";
+    cout << "1- Black & white Filter\n";
+    cout << "2- Invert Filter\n";
+    cout << "3- Merge Filter\n";
+    cout << "4- Flip Image\n";
+    cout << "5- Darken and Lighten Image\n";
+    cout << "6- Rotate Image\n";
+    cout << "9- Shrink Image\n";
+    cout << "c- Blur Image\n";
+    cout << "s- Save the image to a file\n";
+    cout << "0- Exit\n";
+
+    // filter to apply
+    char choice;
+    cout << ">> ";
+    cin >> choice;
+
+    return tolower(choice);
+}
+
 
 // load image to 2d array in memory
 void load()
 {
-
     fstream file;
     char fileName[100];
 
@@ -65,87 +90,7 @@ void load()
     readGSBMP(fileName, image);
 }
 
-// create menu for user
-char displayMenu()
-{
 
-    cout << "Please select a filter to apply or 0 to exit: \n";
-    cout << "1- Black & white Filter\n";
-    cout << "2- Invert Filter\n";
-    cout << "3- Merge Filter\n";
-    cout << "4- Flip Image\n";
-    cout << "5- Darken and Lightern Image\n";
-    cout << "6- Rotate Image\n";
-    cout << "7- Detect Image Edges\n";
-    cout << "8- Enlarge Image\n";
-    cout << "9- Shrink Image\n";
-    cout << "a- Mirror 1/2 Image\n";
-    cout << "b- Shuffle Image\n";
-    cout << "c- Blur Image\n";
-    cout << "s- Save the image to a file\n";
-    cout << "0- Exit\n";
-
-    // filter to apply
-    char choice;
-    cout << ">> ";
-    cin >> choice;
-
-    return tolower(choice);
-}
-
-// call filter
-void applyFilter(int choice)
-{
-
-    switch (choice)
-    {
-    case '1':
-        blackWhite();
-        break;
-
-    case '5':
-        char contrast;
-        cout << "Contrast (D)arken or (L)ighten: ";
-        cin >> contrast;
-        Darken_and_Lighten_Image(contrast);
-        break;
-    case '0':
-        cout << "GOODBYE :)\n";
-        exit(0);
-        break;
-    case '4':
-        char direction;
-        cout << "Flip (H)orizontally or (V)ertically: "; // take direction from user
-        cin >> direction;
-        flip(direction);
-        break;
-
-    case '3':
-        merge();
-        break;
-    case '2':
-        invert();
-        break;
-    case '6':
-    {
-        string degree;
-        cout << "Rotate (90), (180) or (270) degrees?: ";
-        cin >> degree;
-        rotate(degree);
-    }
-    break;
-    case 's':
-        save();
-        break;
-    default:
-        cout << "Not available Filter\n";
-        break;
-        // filter to apply
-        char choice;
-        cout << ">> ";
-        cin >> choice;
-    }
-}
 
 void save()
 {
@@ -156,6 +101,104 @@ void save()
     strcat(file, ".bmp");
     writeGSBMP(file, image);
 }
+
+// copy image after filter to global image
+void cpyToImage(unsigned char filterImage[][SIZE])
+{
+    for (int i = 0; i < SIZE; i++)
+    {
+        for (int j = 0; j < SIZE; j++)
+        {
+            image[i][j] = filterImage[i][j];
+        }
+    }
+}
+
+// call filter
+void applyFilter(int choice)
+{
+    switch (choice)
+    {
+        case '0':
+            cout << "GOODBYE :)\n";
+            exit(0);
+            break;
+
+        case '1':
+            blackWhite();
+            break;
+
+        case '2':
+            invert();
+            break;
+
+        case '3':
+            merge();
+            break;
+
+        case '4':
+            char direction;
+            cout << "Flip (H)orizontally or (V)ertically: "; // take direction from user
+            cin >> direction;
+            flip(direction);
+            break;
+
+        case '5':
+            char contrast;
+            cout << "Contrast (D)arken or (L)ighten: ";
+            cin >> contrast;
+            while(contrast != 'D' && contrast != 'd' && contrast != 'L' && contrast != 'l')
+                {
+                    cout << "Choose only D or L: ";
+                    cin >> contrast;
+                }
+            Darken_and_Lighten_Image(contrast);
+            break;
+
+        case '6':
+        {
+            string degree;
+            cout << "Rotate (90), (180) or (270) degrees?: ";
+            cin >> degree;
+            rotate(degree);
+            break;
+        }
+        
+        case '9':
+        {
+            string size;
+            cout << "Shrink to (1/2), (1/3) or (1/4)? ";
+            cin >> size;
+            while(size != "1/2" && size != "1/3" && size != "1/4")
+            {
+                cout << "Choose (1/2), (1/3) or (1/4) only: ";
+                cin >> size;
+            }
+            shrink_image(size);
+        }
+        
+        case 'c':
+            blur();
+            break;
+
+        case 's':
+            save();
+            break;
+
+        default:
+        {
+            cout << "Not available Filter\n";
+            break;
+            // filter to apply
+            char choice;
+            cout << ">> ";
+            cin >> choice;
+        }
+
+    }
+}
+
+
 
 // convert image to black and white image
 void blackWhite()
@@ -194,30 +237,24 @@ void blackWhite()
     cpyToImage(blackWhiteImage);
 }
 
-
-void Darken_and_Lighten_Image(char contrast)
+// invert the image
+void invert()
 {
-    unsigned char adjusted_image[SIZE][SIZE]; // dorl means darken or ligthen
+    unsigned char invertImage[SIZE][SIZE];
 
-    if(contrast == 'D' || contrast == 'd') // darken the image
+    for (int i = 0; i < SIZE; i++)
     {
-        for(int i = 0; i < SIZE; i++)
-            for (int j = 0; j < SIZE; j++)
-                adjusted_image[i][j] = 0.5 * image[i][j]; 
+        for (int j = 0; j < SIZE; j++)
+        {
+            invertImage[i][j] = 255 - image[i][j];
+        }
     }
 
-
-    else if(contrast == 'L' || contrast == 'l')  // ligthen the image
-    {
-        for(int i = 0; i < SIZE; i++)
-            for (int j = 0; j < SIZE; j++)
-                adjusted_image[i][j]=pow(image[i][j],0.8)+150; 
-    }
-
-
-    cpyToImage(adjusted_image);
+    cpyToImage(invertImage);
 }
 
+
+// Merge two images
 void merge()
 {
     fstream file;
@@ -278,33 +315,29 @@ void flip(char direction)
     cpyToImage(flipImage);
 }
 
-// copy image after filter to globall image
-void cpyToImage(unsigned char filterImage[][SIZE])
+// Change the contrast of the image
+void Darken_and_Lighten_Image(char contrast)
 {
-    for (int i = 0; i < SIZE; i++)
-    {
-        for (int j = 0; j < SIZE; j++)
-        {
-            image[i][j] = filterImage[i][j];
-        }
-    }
-}
+    unsigned char adjusted_image[SIZE][SIZE]{}; // dorl means darken or ligthen
 
-// invert filter
-void invert()
-{
-    unsigned char invertImage[SIZE][SIZE];
-
-    for (int i = 0; i < SIZE; i++)
+    if(contrast == 'D' || contrast == 'd') // darken the image
     {
-        for (int j = 0; j < SIZE; j++)
-        {
-            invertImage[i][j] = 255 - image[i][j];
-        }
+        for(int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
+                adjusted_image[i][j] = 0.5 * image[i][j]; 
     }
 
-    cpyToImage(invertImage);
+
+    else if(contrast == 'L' || contrast == 'l')  // ligthen the image
+    {
+        for(int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
+                adjusted_image[i][j]=pow(image[i][j],0.8)+150; 
+    }
+
+    cpyToImage(adjusted_image);
 }
+
 
 // rotate image by specific degree
 void rotate(string degree)
@@ -340,4 +373,91 @@ void rotate(string degree)
     }
 
     cpyToImage(rotatedImage);
+}
+
+void shrink_image(string size)
+{
+    unsigned char shrinked_image[SIZE][SIZE];
+
+    long long avg{};
+
+    for(int i = 0; i < SIZE; i++)
+        for(int j = 0; j < SIZE; j++)
+            shrinked_image[i][j] = 255;
+
+
+
+    if(size == "1/2")
+    {
+        long avg{};
+
+        for(int i = 0; i < SIZE / 2; i++)
+        {
+            static int x = 0;
+            static int y = 0;
+
+            for(int j = 0; j < SIZE / 2; j++)
+            {
+                avg = (image[x][y] + image[x][y+1] + image[x+1][y]  + image[x+1][y+1]) / 4;
+                shrinked_image[i][j] = avg;
+                y+=2;
+            }
+            x+=2;
+        }
+    }
+
+    else if(size == "1/3")
+    {
+        long avg{};
+
+        for(int i = 0; i < SIZE / 3; i++)
+        {
+            static int x = 1;
+            static int y = 1;
+
+            for(int j = 0; j < SIZE / 3; j++)
+            {
+            avg = (image[x-1][y-1] + image[x-1][y] + image[x-1][y+1] + image[x][y-1] +  image[x][y] +  image[x][y+1] + image[x+1][y-1] +  image[x+1][y] + image[x+1][y+1]) / 9;
+                shrinked_image[i][j] = avg;
+                y+=3;
+            }
+            x+=3;
+        }
+    
+    }
+
+    // else if(size == "1/4")
+    // {
+    //     for(int i = 1; i < SIZE / 4; i+=2)
+    //     {
+    //         for(int j = 1; j < SIZE / 4; j+=2)
+    //         {
+
+    //         }
+    //     }
+    // }
+
+    cpyToImage(shrinked_image);
+}
+
+void blur()
+{
+    unsigned char blurred_image[SIZE][SIZE];
+
+    long long avg = 0;
+
+
+
+
+    for(int i = 1; i < SIZE; i++)
+    {
+        for(int j = 1; j < SIZE; j++)
+        {
+            avg = (image[i-1][j-1] + image[i-1][j] + image[i-1][j+1] + image[i][j-1] +  image[i][j] +  image[i][j+1] + image[i+1][j-1] +  image[i+1][j] + image[i+1][j+1]) / 9;
+            blurred_image[i][j] = avg;
+        }
+    }
+
+    cpyToImage(blurred_image);
+
 }
