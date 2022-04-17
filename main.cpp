@@ -399,7 +399,8 @@ void shrink_image(string size){
 
 
 
-    if(size == "1/2"){
+    if(size == "1/2")
+    {
         long avg{};
 
         for(int i = 0, x = 0; i < SIZE / 2; i++)
@@ -413,32 +414,38 @@ void shrink_image(string size){
             }
             x+=2;
         }
-    }else if(size == "1/3"){
-        long avg{};
+    }
+    
+    else if(size == "1/3")
+    {
+        long long avg{};
 
-        for(int i = 0, x=1; i < SIZE / 3; i++)
+        for(int i = 0, x = 0; i < SIZE / 3; i++)
         {
-         
-            for(int j = 0, y=1; j < SIZE / 3; j++)
+        
+            for(int j = 0, y = 0; j < SIZE / 3; j++)
             {
-            avg = (image[x-1][y-1] + image[x-1][y] + image[x-1][y+1] + image[x][y-1] +  image[x][y] +  image[x][y+1] + image[x+1][y-1] +  image[x+1][y] + image[x+1][y+1]) / 9;
+                avg = (image[x-1][y-1] + image[x-1][y] + image[x-1][y+1] + image[x][y-1] +  image[x][y] +  image[x][y+1] + image[x+1][y-1] +  image[x+1][y] + image[x+1][y+1]) / 9;
                 shrinked_image[i][j] = avg;
                 y+=3;
             }
             x+=3;
         }
-    
     }
-    // else if(size == "1/4")
-    // {
-    //     for(int i = 1; i < SIZE / 4; i+=2)
-    //     {
-    //         for(int j = 1; j < SIZE / 4; j+=2)
-    //         {
 
-    //         }
-    //     }
-    // }
+    else if(size == "1/4")
+    {
+        for(int i = 0, x = 0; i < SIZE / 4; i++)
+        {
+            for(int j = 0, y = 0; j < SIZE / 4; j++)
+            {
+                avg = (image[x][y] + image[x][y+1] + image[x][y+2] + image[x][y+3] + image[x+1][y] + image[x+1][y+1] + image[x+1][y+2] + image[x+1][y+3] + image[x+2][y] + image[x+2][y+1]+ image[x+2][y+2] + image[x+2][y+3] + image[x+3][y] + image[x+3][y+1] + image[x+3][y] + image[x+3][y+3]) / 16;
+                shrinked_image[i][j] = avg;
+                y+=4;
+            }
+            x+=4;
+        }
+    }
 
     cpyToImage(shrinked_image);
 }
@@ -454,11 +461,9 @@ void blur()
             int avg = 0;
 
             // claculate avg for kernel
-            for(int k=i; k<i+3; k++){
-                for(int m=j; m<j+3; m++){
+            for(int k=i; k<i+3; k++)
+                for(int m=j; m<j+3; m++)
                     avg += image[k][m];
-                }
-            }
 
             avg /= 9;
 
