@@ -29,6 +29,9 @@ void rotate(string degree);
 void Darken_and_Lighten_Image(char);
 void shrink_image(string size);
 void blur();
+void shuffle();
+void cutImage();
+void enlarge();
 
 
 // image that will be process
@@ -56,7 +59,9 @@ char displayMenu()
     cout << "4- Flip Image\n";
     cout << "5- Darken and Lighten Image\n";
     cout << "6- Rotate Image\n";
+    cout << "8- Enlarge Image\n";
     cout << "9- Shrink Image\n";
+    cout << "b- Shuffle Image\n";
     cout << "c- Blur Image\n";
     cout << "s- Save the image to a file\n";
     cout << "0- Exit\n";
@@ -163,6 +168,9 @@ void applyFilter(int choice)
             rotate(degree);
             break;
         }
+        case '8':
+            enlarge();
+            break;
         
         case '9':
         {
@@ -175,7 +183,11 @@ void applyFilter(int choice)
                 cin >> size;
             }
             shrink_image(size);
+            break;
         }
+        case 'b':
+            shuffle();
+            break;
         
         case 'c':
             blur();
@@ -375,11 +387,11 @@ void rotate(string degree)
     cpyToImage(rotatedImage);
 }
 
-void shrink_image(string size)
-{
+void shrink_image(string size){
     unsigned char shrinked_image[SIZE][SIZE];
 
     long long avg{};
+
 
     for(int i = 0; i < SIZE; i++)
         for(int j = 0; j < SIZE; j++)
@@ -387,16 +399,13 @@ void shrink_image(string size)
 
 
 
-    if(size == "1/2")
-    {
+    if(size == "1/2"){
         long avg{};
 
-        for(int i = 0; i < SIZE / 2; i++)
+        for(int i = 0, x = 0; i < SIZE / 2; i++)
         {
-            static int x = 0;
-            static int y = 0;
 
-            for(int j = 0; j < SIZE / 2; j++)
+            for(int j = 0, y = 0; j < SIZE / 2; j++)
             {
                 avg = (image[x][y] + image[x][y+1] + image[x+1][y]  + image[x+1][y+1]) / 4;
                 shrinked_image[i][j] = avg;
@@ -404,18 +413,13 @@ void shrink_image(string size)
             }
             x+=2;
         }
-    }
-
-    else if(size == "1/3")
-    {
+    }else if(size == "1/3"){
         long avg{};
 
-        for(int i = 0; i < SIZE / 3; i++)
+        for(int i = 0, x=1; i < SIZE / 3; i++)
         {
-            static int x = 1;
-            static int y = 1;
-
-            for(int j = 0; j < SIZE / 3; j++)
+         
+            for(int j = 0, y=1; j < SIZE / 3; j++)
             {
             avg = (image[x-1][y-1] + image[x-1][y] + image[x-1][y+1] + image[x][y-1] +  image[x][y] +  image[x][y+1] + image[x+1][y-1] +  image[x+1][y] + image[x+1][y+1]) / 9;
                 shrinked_image[i][j] = avg;
@@ -425,7 +429,6 @@ void shrink_image(string size)
         }
     
     }
-
     // else if(size == "1/4")
     // {
     //     for(int i = 1; i < SIZE / 4; i+=2)
@@ -442,22 +445,29 @@ void shrink_image(string size)
 
 void blur()
 {
-    unsigned char blurred_image[SIZE][SIZE];
+    unsigned char blurred_image[SIZE][SIZE]{};
 
-    long long avg = 0;
+    //move kernel
+    for(int i = 0; i < SIZE-2; i++){
+        for(int j = 0; j < SIZE-2; j++){
+            
+            int avg = 0;
 
+            // claculate avg for kernel
+            for(int k=i; k<i+3; k++){
+                for(int m=j; m<j+3; m++){
+                    avg += image[k][m];
+                }
+            }
 
+            avg /= 9;
 
-
-    for(int i = 1; i < SIZE; i++)
-    {
-        for(int j = 1; j < SIZE; j++)
-        {
-            avg = (image[i-1][j-1] + image[i-1][j] + image[i-1][j+1] + image[i][j-1] +  image[i][j] +  image[i][j+1] + image[i+1][j-1] +  image[i+1][j] + image[i+1][j+1]) / 9;
+            // update center of kernel in blurred image
             blurred_image[i][j] = avg;
         }
     }
 
+    
     cpyToImage(blurred_image);
 
 }
@@ -565,8 +575,6 @@ void shuffle(){
             rowIndex++;
         }
     }
-    
-
 
 
 }
