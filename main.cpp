@@ -32,6 +32,8 @@ void blur();
 void shuffle();
 void cutImage();
 void enlarge();
+void mirror();
+void detect();
 
 
 // image that will be process
@@ -59,8 +61,10 @@ char displayMenu()
     cout << "4- Flip Image\n";
     cout << "5- Darken and Lighten Image\n";
     cout << "6- Rotate Image\n";
+    cout << "7- Detect Image Edges\n";
     cout << "8- Enlarge Image\n";
     cout << "9- Shrink Image\n";
+    cout << "a- Mirror 1/2 Image\n";
     cout << "b- Shuffle Image\n";
     cout << "c- Blur Image\n";
     cout << "s- Save the image to a file\n";
@@ -168,6 +172,9 @@ void applyFilter(int choice)
             rotate(degree);
             break;
         }
+        case '7':
+            detect();
+            break;
         case '8':
             enlarge();
             break;
@@ -185,6 +192,9 @@ void applyFilter(int choice)
             shrink_image(size);
             break;
         }
+        case 'a':
+            mirror();
+            break;
         case 'b':
             shuffle();
             break;
@@ -536,6 +546,7 @@ void enlarge(){
 
         rowIndex += 2;
     }
+    
 
 }
 
@@ -583,5 +594,28 @@ void shuffle(){
         }
     }
 
+}
+
+void mirror(){
 
 }
+
+void detect(){
+
+    unsigned char detectedImage[SIZE][SIZE];
+
+    // move kernel
+    for(int i=0; i<SIZE-2; i++){
+        for(int j=0; j<SIZE-2; j++){
+            int gy = ((image[i][j]*-1) + (image[i][j+2]*1) + (image[i+1][j]*-2) + (image[i+1][j+2]*2) + (image[i+2][j] *-1) + (image[i+2][j+2]*1));
+            int gx = ((image[i][j]*-1) + (image[i][j+1]*-2) + (image[i][j+2]*-1) + (image[i+2][j]*1) + (image[i+2][j+1] *2) + (image[i+2][j+2]*1));
+            int total = sqrt(pow(gy, 2)+pow(gx, 2));
+            detectedImage[i][j] = total;
+        }
+    }
+
+    cpyToImage(detectedImage);
+    invert();
+
+}
+
