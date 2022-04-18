@@ -1,15 +1,3 @@
-/*
- * FCAI - programming 1 - 2022 - Assignment 3
- * Program Name :  mian.cpp
- * Last Modification Date : 02/4/2022
- * Author1 and ID and Group:  Mohamed Wael Mohamed      20210361    S21
- * Author2 and ID and Group:  Ali Tarek Mohamed         20210245    S21
- * Author3 and ID anf Group:  Omar Mohamed Gamal        20210270    S21
- * Teaching Assistant:  Abdulrahman Abdulmonem
- * Purpose: This is photoshop console app
- */
-
-// include all libraries
 #include <bits/stdc++.h>
 #include "bmplib.cpp"
 
@@ -19,7 +7,7 @@ using namespace std;
 char displayMenu();
 void load();
 void save();
-void cpyToImage(unsigned char image[][SIZE]);
+void cpyToImage(unsigned char image[][SIZE][RGB]);
 void applyFilter(int choice);
 void blackWhite();
 void invert();
@@ -35,7 +23,7 @@ void enlarge();
 
 
 // image that will be process
-unsigned char image[SIZE][SIZE];
+unsigned char image[SIZE][SIZE][RGB];
 
 // start of program
 int main()
@@ -92,7 +80,7 @@ void load()
         file.open(fileName);
     } while (!file);
 
-    readGSBMP(fileName, image);
+    readRGBBMP(fileName, image);
 }
 
 
@@ -104,19 +92,17 @@ void save()
     cin >> file;
     cout << '\n';
     strcat(file, ".bmp");
-    writeGSBMP(file, image);
+    writeRGBBMP(file, image);
 }
 
 // copy image after filter to global image
-void cpyToImage(unsigned char filterImage[][SIZE])
+void cpyToImage(unsigned char filterImage[][SIZE][RGB])
 {
     for (int i = 0; i < SIZE; i++)
-    {
         for (int j = 0; j < SIZE; j++)
-        {
-            image[i][j] = filterImage[i][j];
-        }
-    }
+            for(int k = 0; k < RGB; k++)
+                image[i][j][k] = filterImage[i][j][k];
+
 }
 
 // call filter
@@ -134,9 +120,10 @@ void applyFilter(int choice)
             break;
 
         case '2':
+        {
             invert();
             break;
-
+        }
         case '3':
             merge();
             break;
@@ -165,12 +152,17 @@ void applyFilter(int choice)
             string degree;
             cout << "Rotate (90), (180) or (270) degrees?: ";
             cin >> degree;
+            while(degree != "90" && degree != "180" && degree != "270")
+            {
+                cout << "Choose only 90, 180 or 270: ";
+                cin >> degree;
+            }
             rotate(degree);
             break;
         }
-        case '8':
-            enlarge();
-            break;
+        // case '8':
+        //     enlarge();
+        //     break;
         
         case '9':
         {
@@ -185,9 +177,9 @@ void applyFilter(int choice)
             shrink_image(size);
             break;
         }
-        case 'b':
-            shuffle();
-            break;
+        // case 'b':
+        //     shuffle();
+        //     break;
         
         case 'c':
             blur();
@@ -199,7 +191,7 @@ void applyFilter(int choice)
 
         default:
         {
-            cout << "Not available Filter\n";
+            cout << "Not available Filter" << endl;
             break;
             // filter to apply
             char choice;
@@ -211,8 +203,6 @@ void applyFilter(int choice)
 }
 
 
-
-// convert image to black and white image
 void blackWhite()
 {
 
@@ -222,26 +212,33 @@ void blackWhite()
     {
         for (int j = 0; j < SIZE; j++)
         {
-            avg += image[i][j];
+            for(int k = 0; k < RGB; k++)
+            {
+                avg += image[i][j][k];
+            }
         }
     }
 
-    avg /= 256 * 256;
+    avg /= 256 * 256 * 3;
 
-    unsigned char blackWhiteImage[SIZE][SIZE];
+    unsigned char blackWhiteImage[SIZE][SIZE][RGB];
 
     // convert to black and white image
     for (int i = 0; i < SIZE; i++)
     {
         for (int j = 0; j < SIZE; j++)
         {
-            if (image[i][j] > avg)
+            for(int k = 0; k < RGB; k++)
             {
-                blackWhiteImage[i][j] = 255;
-            }
-            else
-            {
-                blackWhiteImage[i][j] = 0;
+
+                if (image[i][j][k] > avg)
+                {
+                    blackWhiteImage[i][j][k] = 255;
+                }
+                else
+                {
+                    blackWhiteImage[i][j][k] = 0;
+                }
             }
         }
     }
@@ -249,16 +246,19 @@ void blackWhite()
     cpyToImage(blackWhiteImage);
 }
 
-// invert the image
+
 void invert()
 {
-    unsigned char invertImage[SIZE][SIZE];
+    unsigned char invertImage[SIZE][SIZE][RGB];
 
     for (int i = 0; i < SIZE; i++)
     {
         for (int j = 0; j < SIZE; j++)
         {
-            invertImage[i][j] = 255 - image[i][j];
+            for(int k = 0; k < RGB; k++)
+            {
+                invertImage[i][j][k] = 255 - image[i][j][k];
+            }
         }
     }
 
@@ -271,7 +271,7 @@ void merge()
 {
     fstream file;
     char fileName2[100];
-    unsigned char image2[SIZE][SIZE];
+    unsigned char image2[SIZE][SIZE][RGB];
 
     do
     {
@@ -283,23 +283,22 @@ void merge()
         file.open(fileName2);
     } while (!file);
 
-    readGSBMP(fileName2, image2);
+    readRGBBMP(fileName2, image2);
 
-    unsigned char merged_image[SIZE][SIZE];
+    unsigned char merged_image[SIZE][SIZE][RGB];
 
     for (int i = 0; i < SIZE; i++)
         for (int j = 0; j < SIZE; j++)
-            merged_image[i][j] = (image[i][j] + image2[i][j]) / 2;
+            for(int k = 0; k < 3; k++)
+                merged_image[i][j][k] = (image[i][j][k] + image2[i][j][k]) / 2;
         
     cpyToImage(merged_image);
 }
 
-
-
 void flip(char direction)
 {
 
-    unsigned char flipImage[SIZE][SIZE];
+    unsigned char flipImage[SIZE][SIZE][RGB];
 
     // flip vertical
     if (direction == 'V' || direction == 'v')
@@ -308,7 +307,10 @@ void flip(char direction)
         {
             for (int j = 0; j < SIZE; j++)
             {
-                flipImage[i][j] = image[255 - i][j];
+                for(int k = 0; k < 3; k++)
+                {
+                    flipImage[i][j][k] = image[255 - i][j][k];
+                }
             }
         }
     }
@@ -318,7 +320,10 @@ void flip(char direction)
         {
             for (int j = 0; j < SIZE; j++)
             {
-                flipImage[i][j] = image[i][255 - j];
+                for(int k = 0; k < 3; k++)
+                {
+                    flipImage[i][j][k] = image[i][255 - j][k];
+                }
             }
         }
     }
@@ -330,13 +335,14 @@ void flip(char direction)
 // Change the contrast of the image
 void Darken_and_Lighten_Image(char contrast)
 {
-    unsigned char adjusted_image[SIZE][SIZE]{}; // dorl means darken or ligthen
+    unsigned char adjusted_image[SIZE][SIZE][RGB]{}; // dorl means darken or ligthen
 
     if(contrast == 'D' || contrast == 'd') // darken the image
     {
         for(int i = 0; i < SIZE; i++)
             for (int j = 0; j < SIZE; j++)
-                adjusted_image[i][j] = 0.5 * image[i][j]; 
+                for(int k = 0; k < 3; k++)
+                    adjusted_image[i][j][k] = 0.5 * image[i][j][k]; 
     }
 
 
@@ -344,18 +350,18 @@ void Darken_and_Lighten_Image(char contrast)
     {
         for(int i = 0; i < SIZE; i++)
             for (int j = 0; j < SIZE; j++)
-                adjusted_image[i][j]=pow(image[i][j],0.8)+150; 
+                for(int k = 0; k < 3; k++)
+                    adjusted_image[i][j][k] = pow(image[i][j][k],0.8)+150; 
     }
 
     cpyToImage(adjusted_image);
 }
 
-
 // rotate image by specific degree
 void rotate(string degree)
 {
 
-    unsigned char rotatedImage[SIZE][SIZE];
+    unsigned char rotatedImage[SIZE][SIZE][RGB];
 
     // rotate by 90
     if (degree == "90")
@@ -363,12 +369,10 @@ void rotate(string degree)
 
         // transpose image matrix
         for (int i = 0; i < SIZE; i++)
-        {
             for (int j = 0; j < SIZE; j++)
-            {
-                rotatedImage[i][j] = image[j][i];
-            }
-        }
+                for(int k = 0; k < 3; k++)
+                    rotatedImage[i][j][k] = image[j][i][k];
+
     }
     else if (degree == "180")
     { // rotate by 180
@@ -387,15 +391,17 @@ void rotate(string degree)
     cpyToImage(rotatedImage);
 }
 
+
 void shrink_image(string size){
-    unsigned char shrinked_image[SIZE][SIZE];
+    unsigned char shrinked_image[SIZE][SIZE][RGB];
 
     long long avg{};
 
 
     for(int i = 0; i < SIZE; i++)
         for(int j = 0; j < SIZE; j++)
-            shrinked_image[i][j] = 255;
+            for(int k = 0; k < 3; k++)
+                shrinked_image[i][j][k] = 255;
 
 
 
@@ -405,12 +411,16 @@ void shrink_image(string size){
 
         for(int i = 0, x = 0; i < SIZE / 2; i++)
         {
+        
 
             for(int j = 0, y = 0; j < SIZE / 2; j++)
             {
-                avg = (image[x][y] + image[x][y+1] + image[x+1][y]  + image[x+1][y+1]) / 4;
-                shrinked_image[i][j] = avg;
-                y+=2;
+                for(int k = 0; k < 3; k++)
+                {
+                    avg = (image[x][y][k] + image[x][y+1][k] + image[x+1][y][k]  + image[x+1][y+1][k]) / 4;
+                    shrinked_image[i][j][k] = avg;
+                }
+                    y+=2;
             }
             x+=2;
         }
@@ -425,8 +435,12 @@ void shrink_image(string size){
         
             for(int j = 0, y = 0; j < SIZE / 3; j++)
             {
-                avg = (image[x-1][y-1] + image[x-1][y] + image[x-1][y+1] + image[x][y-1] +  image[x][y] +  image[x][y+1] + image[x+1][y-1] +  image[x+1][y] + image[x+1][y+1]) / 9;
-                shrinked_image[i][j] = avg;
+                for(int k = 0; k < 3; k++)
+                {
+                    avg = (image[x-1][y-1][k] + image[x-1][y][k] + image[x-1][y+1][k] + image[x][y-1][k] +  image[x][y][k] +  image[x][y+1][k] + image[x+1][y-1][k] +  image[x+1][y][k] + image[x+1][y+1][k]) / 9;
+                    shrinked_image[i][j][k] = avg;
+                }
+
                 y+=3;
             }
             x+=3;
@@ -439,8 +453,11 @@ void shrink_image(string size){
         {
             for(int j = 0, y = 0; j < SIZE / 4; j++)
             {
-                avg = (image[x][y] + image[x][y+1] + image[x][y+2] + image[x][y+3] + image[x+1][y] + image[x+1][y+1] + image[x+1][y+2] + image[x+1][y+3] + image[x+2][y] + image[x+2][y+1]+ image[x+2][y+2] + image[x+2][y+3] + image[x+3][y] + image[x+3][y+1] + image[x+3][y] + image[x+3][y+3]) / 16;
-                shrinked_image[i][j] = avg;
+                for(int k = 0; k < 3; k++)
+                {
+                    avg = (image[x][y][k] + image[x][y+1][k] + image[x][y+2][k] + image[x][y+3][k] + image[x+1][y][k] + image[x+1][y+1][k] + image[x+1][y+2][k] + image[x+1][y+3][k] + image[x+2][y][k] + image[x+2][y+1][k] + image[x+2][y+2][k] + image[x+2][y+3][k] + image[x+3][y][k] + image[x+3][y+1][k] + image[x+3][y][k] + image[x+3][y+3][k]) / 16;
+                    shrinked_image[i][j][k] = avg;
+                }
                 y+=4;
             }
             x+=4;
@@ -452,136 +469,31 @@ void shrink_image(string size){
 
 void blur()
 {
-    unsigned char blurred_image[SIZE][SIZE]{};
+    unsigned char blurred_image[SIZE][SIZE][RGB]{};
 
     //move kernel
     for(int i = 0; i < SIZE; i++)
     {
         for(int j = 0; j < SIZE; j++)
         {
-            
-            int avg = 0;
+            for(int k = 0; k < 3; k++)
+            {
+                int avg = 0;
 
-            // claculate avg for kernel
-            for(int k = i; k < i + 7; k++)
-                for(int m = j; m < j + 7; m++)
-                    avg += image[k][m];
+                // claculate avg for kernel
+                for(int l = i; l < i + 7; l++)
+                    for(int m = j; m < j + 7; m++)
+                        avg += image[l][m][k];
 
-            avg /= 49;
+                avg /= 49;
 
-            // update center of kernel in blurred image
-            blurred_image[i][j] = avg;
+                // update center of kernel in blurred image
+                blurred_image[i][j][k] = avg;
+            }
         }
     }
 
     
     cpyToImage(blurred_image);
-
-}
-// cut image to corrspond quarter and fill the image given
-void cutImage(int quarter, unsigned char fillImage[][SIZE/2]){
-    // corrdinate to cut image
-    int startRow, endRow, startCol, endCol;
-
-    // choose start and end for row and col based on quarter
-    startRow    = quarter == 1 || quarter == 2 ? 0 : SIZE / 2;
-    endRow      = quarter == 1 || quarter == 2 ? SIZE / 2 : SIZE;
-    startCol    = quarter == 1 || quarter == 3 ? 0 : SIZE / 2 ;
-    endCol      = quarter == 1 || quarter == 3 ? SIZE / 2 : SIZE; 
-
-
-    // fill given image
-    for(int i=startRow, rowIndex=0; i<endRow; i++){
-        for(int j=startCol, colIndex=0; j<endCol; j++){
-
-            fillImage[rowIndex][colIndex] = image[i][j];
-        
-        colIndex++; // increment col in fillImage
-        }
-        rowIndex++; // increment row in fillImage
-    }
-    
-}
-
-// enlarge quarter from image
-void enlarge(){
-
-    int quarter = 0; 
-       
-    // validate user input
-    while ( quarter > 4 || quarter < 1){
-        // take quarter pos from user
-         cout << "Which quarter to enlarge 1, 2, 3 or 4 ? ";
-         cin >> quarter;
-    }
-
-    
-    unsigned char quarterImage[SIZE/2][SIZE/2];
-
-
-    cutImage(quarter, quarterImage);
-
-
-    for(int i=0, rowIndex =0; i<SIZE/2; i++){
-        for(int j=0, colIndex=0; j<SIZE/2; j++){
-
-            // duplicate pixel 
-            image[rowIndex][colIndex] = quarterImage[i][j];
-            image[rowIndex+1][colIndex] = quarterImage[i][j];
-            image[rowIndex][colIndex+1] = quarterImage[i][j];
-            image[rowIndex+1][colIndex+1] = quarterImage[i][j];
-
-            colIndex += 2;
-        }
-
-        rowIndex += 2;
-    }
-
-}
-
-// shuffle the order of four quarters of image 
-void shuffle(){
-
-    // order of suffle
-    int order[4];    
-
-    // get order from user
-    cout << "New order of quarters ? ";
-    for(int i=0; i<4; i++){
-        cin >> order[i];
-        if( order[i] > 4 || order[i] < 1){
-            cout << "reject\n";
-            return;
-        }
-    }
-
-    // all quarters of image
-    vector<unsigned char[SIZE/2][SIZE/2]>quarterImages(4);
-
-    // get quarters of image
-    for(int i=0; i<quarterImages.size(); i++){
-        cutImage(order[i], quarterImages[i]);
-    }
-
-    int rowIndex, colIndex;
-    for(int i=0; i<4; i++){ // loop on quartersImage
-
-        // avoid overflow 
-        rowIndex = i == 0 || i == 1  ? 0 : SIZE / 2;
-
-        //fiil image with quarter in order
-        for(int j=0; j<SIZE/2; j++){
-
-            // avoid overflow
-            colIndex = i == 0 || i == 2  ? 0 : SIZE / 2;
-
-            for(int k=0; k<SIZE/2; k++){
-                image[rowIndex][colIndex] = quarterImages[i][j][k];
-                colIndex++;
-            }
-            rowIndex++;
-        }
-    }
-
 
 }
