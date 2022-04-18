@@ -16,9 +16,10 @@ void flip(char direction);
 void rotate(string degree);
 void Darken_and_Lighten_Image(char);
 void shrink_image(string size);
+void detect();
 void blur();
 void shuffle();
-void cutImage();
+void cutImage(int quarter, unsigned char fillImage[][SIZE/2][RGB]);
 void enlarge();
 
 
@@ -47,6 +48,7 @@ char displayMenu()
     cout << "4- Flip Image\n";
     cout << "5- Darken and Lighten Image\n";
     cout << "6- Rotate Image\n";
+    cout << "7- Detect Image Edges\n";
     cout << "8- Enlarge Image\n";
     cout << "9- Shrink Image\n";
     cout << "b- Shuffle Image\n";
@@ -160,9 +162,14 @@ void applyFilter(int choice)
             rotate(degree);
             break;
         }
-        // case '8':
-        //     enlarge();
-        //     break;
+
+        case '7':
+            detect();
+            break;
+
+        case '8':
+            enlarge();
+            break;
         
         case '9':
         {
@@ -177,9 +184,9 @@ void applyFilter(int choice)
             shrink_image(size);
             break;
         }
-        // case 'b':
-        //     shuffle();
-        //     break;
+        case 'b':
+            shuffle();
+            break;
         
         case 'c':
             blur();
@@ -205,39 +212,25 @@ void applyFilter(int choice)
 
 void blackWhite()
 {
-
-    // calcualte average
-    long long avg = 0;
-
-    for (int i = 0; i < SIZE; i++)
-        for (int j = 0; j < SIZE; j++)
-            for(int k = 0; k < RGB; k++)
-                avg += image[i][j][k];
-
-
-    avg /= 256 * 256 * 3;
-
     unsigned char blackWhiteImage[SIZE][SIZE][RGB];
 
-    // convert to black and white image
     for (int i = 0; i < SIZE; i++)
     {
         for (int j = 0; j < SIZE; j++)
-        {
-            for(int k = 0; k < RGB; k++)
-            {
+        {   
+            int rgbSum = 0;
 
-                if (image[i][j][k] > avg)
-                {
-                    blackWhiteImage[i][j][k] = 255;
-                }
-                else
-                {
-                    blackWhiteImage[i][j][k] = 0;
-                }
-            }
+            for(int k = 0; k < RGB; k++)
+                rgbSum += image[i][j][k];
+            
+            if(rgbSum  > (SIZE * 3) / 2)
+                blackWhiteImage[i][j][0] = blackWhiteImage[i][j][1] = blackWhiteImage[i][j][2] = 255; 
+
+            else
+                blackWhiteImage[i][j][0] = blackWhiteImage[i][j][1] = blackWhiteImage[i][j][2] = 0;
         }
     }
+  
 
     cpyToImage(blackWhiteImage);
 }
@@ -491,5 +484,153 @@ void blur()
 
     
     cpyToImage(blurred_image);
+
+}
+
+void detect(){
+
+    unsigned char detectedImage[SIZE][SIZE][RGB];
+
+    // move kernel
+    for(int i=0; i<SIZE-2; i++)
+    {
+        for(int j=0; j<SIZE-2; j++)
+        {
+            for(int k = 0; k < RGB; k++)
+            {
+                int gy = ((image[i][j][k]*-1) + (image[i][j+2][k]*1) + (image[i+1][j][k]*-2) + (image[i+1][j+2][k]*2) + (image[i+2][j][k] *-1) + (image[i+2][j+2][k]*1));
+                int gx = ((image[i][j][k]*-1) + (image[i][j+1][k]*-2) + (image[i][j+2][k]*-1) + (image[i+2][j][k]*1) + (image[i+2][j+1][k] *2) + (image[i+2][j+2][k]*1));
+                int total = sqrt(pow(gy, 2)+pow(gx, 2));
+                detectedImage[i][j][k] = total;
+            }
+        }
+    }
+
+    cpyToImage(detectedImage);
+    invert();
+
+}
+
+
+void enlarge()
+{
+
+    int quarter = 0; 
+       
+    // validate user input
+    while ( quarter > 4 || quarter < 1)
+    {
+        // take quarter pos from user
+         cout << "Which quarter to enlarge 1, 2, 3 or 4 ? ";
+         cin >> quarter;
+    }
+
+    
+    unsigned char quarterImage[SIZE/2][SIZE/2][RGB];
+
+
+    cutImage(quarter, quarterImage);
+
+
+    for(int i=0, rowIndex =0; i<SIZE/2; i++)
+    {
+        for(int j=0, colIndex=0; j<SIZE/2; j++)
+        {
+            for(int k = 0; k < RGB; k++)
+            {
+                // duplicate pixel 
+                image[rowIndex][colIndex][k] = quarterImage[i][j][k];
+                image[rowIndex+1][colIndex][k] = quarterImage[i][j][k];
+                image[rowIndex][colIndex+1][k] = quarterImage[i][j][k];
+                image[rowIndex+1][colIndex+1][k] = quarterImage[i][j][k];
+                
+            }
+            colIndex += 2;
+            
+        }
+        rowIndex += 2;
+        
+    }
+}
+
+
+// cut image to corrspond quarter and fill the image given
+void cutImage(int quarter, unsigned char fillImage[][SIZE/2][RGB])
+{
+    // corrdinate to cut image
+    int startRow, endRow, startCol, endCol;
+
+    // choose start and end for row and col based on quarter
+    startRow    = quarter == 1 || quarter == 2 ? 0 : SIZE / 2;
+    endRow      = quarter == 1 || quarter == 2 ? SIZE / 2 : SIZE;
+    startCol    = quarter == 1 || quarter == 3 ? 0 : SIZE / 2 ;
+    endCol      = quarter == 1 || quarter == 3 ? SIZE / 2 : SIZE; 
+
+    // fill given image
+    for(int i=startRow, rowIndex=0; i<endRow; i++)
+    {
+        for(int j=startCol, colIndex=0; j<endCol; j++)
+        {
+            for(int k = 0; k < RGB; k++)
+            {
+                fillImage[rowIndex][colIndex][k] = image[i][j][k];
+            }
+                colIndex++; // increment col in fillImage
+
+        }
+        rowIndex++; // increment row in fillImage
+    }
+}
+
+
+
+// shuffle the order of four quarters of image 
+void shuffle()
+{
+
+    // order of suffle
+    int order[4];    
+
+    // get order from user
+    cout << "New order of quarters ? ";
+    for(int i=0; i<4; i++){
+        cin >> order[i];
+        if( order[i] > 4 || order[i] < 1){
+            cout << "reject\n";
+            return;
+        }
+    }
+
+    // all quarters of image
+    vector<unsigned char[SIZE/2][SIZE/2][RGB]>quarterImages(4);
+
+    // get quarters of image
+    for(int i=0; i<quarterImages.size(); i++){
+        cutImage(order[i], quarterImages[i]);
+    }
+
+    int rowIndex, colIndex;
+    for(int i=0; i<4; i++){ // loop on quartersImage
+
+        // avoid overflow 
+        rowIndex = i == 0 || i == 1  ? 0 : SIZE / 2;
+
+        //fiil image with quarter in order
+        for(int j=0; j<SIZE/2; j++){
+
+            // avoid overflow
+            colIndex = i == 0 || i == 2  ? 0 : SIZE / 2;
+
+            for(int k=0; k<SIZE/2; k++)
+            {
+                for(int m = 0; m < RGB; m++)
+                {
+                    image[rowIndex][colIndex][m] = quarterImages[i][j][k][m];
+                }
+                colIndex++;
+            }
+            rowIndex++;
+        }
+    }
 
 }
