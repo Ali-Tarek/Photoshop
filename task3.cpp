@@ -208,16 +208,12 @@ void blackWhite()
 
     // calcualte average
     long long avg = 0;
+
     for (int i = 0; i < SIZE; i++)
-    {
         for (int j = 0; j < SIZE; j++)
-        {
             for(int k = 0; k < RGB; k++)
-            {
                 avg += image[i][j][k];
-            }
-        }
-    }
+
 
     avg /= 256 * 256 * 3;
 
