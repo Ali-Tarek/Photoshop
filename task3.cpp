@@ -205,39 +205,30 @@ void applyFilter(int choice)
 
 void blackWhite()
 {
-
-    // calcualte average
-    long long avg = 0;
-
-    for (int i = 0; i < SIZE; i++)
-        for (int j = 0; j < SIZE; j++)
-            for(int k = 0; k < RGB; k++)
-                avg += image[i][j][k];
-
-
-    avg /= 256 * 256 * 3;
-
     unsigned char blackWhiteImage[SIZE][SIZE][RGB];
 
-    // convert to black and white image
     for (int i = 0; i < SIZE; i++)
     {
         for (int j = 0; j < SIZE; j++)
-        {
+        {   
+            int rgbSum = 0;
             for(int k = 0; k < RGB; k++)
             {
 
-                if (image[i][j][k] > avg)
-                {
-                    blackWhiteImage[i][j][k] = 255;
-                }
-                else
-                {
-                    blackWhiteImage[i][j][k] = 0;
-                }
+                rgbSum += image[i][j][k];
             }
+
+
+            if(rgbSum  > (SIZE * 3) / 2){
+                blackWhiteImage[i][j][0] = blackWhiteImage[i][j][1] = blackWhiteImage[i][j][2] = 255; 
+            }else{
+                blackWhiteImage[i][j][0] = blackWhiteImage[i][j][1] = blackWhiteImage[i][j][2] = 0;
+            }
+
+            
         }
     }
+  
 
     cpyToImage(blackWhiteImage);
 }
