@@ -21,6 +21,7 @@ void blur();
 void shuffle();
 void cutImage(int quarter, unsigned char fillImage[][SIZE/2][RGB]);
 void enlarge();
+void mirror();
 
 
 // image that will be process
@@ -51,6 +52,7 @@ char displayMenu()
     cout << "7- Detect Image Edges\n";
     cout << "8- Enlarge Image\n";
     cout << "9- Shrink Image\n";
+    cout << "a- Mirror 1/2 Image\n";
     cout << "b- Shuffle Image\n";
     cout << "c- Blur Image\n";
     cout << "s- Save the image to a file\n";
@@ -184,6 +186,9 @@ void applyFilter(int choice)
             shrink_image(size);
             break;
         }
+        case 'a':
+            mirror();
+            break;
         case 'b':
             shuffle();
             break;
@@ -633,4 +638,83 @@ void shuffle()
         }
     }
 
+}
+
+void mirror(){
+  char c;
+  cout << "Mirror (l)eft, (r)ight, (u)pper, (d)own side? ";
+  cin >> c; // take the choose from user 
+  c = tolower(c);
+
+  if (c == 'u')
+    {
+      int s = SIZE / 2;
+
+      for (int j = 0; j < SIZE; j++)
+	{
+
+	  int f = SIZE;
+	  for (int i = 0; i < s; i++)
+	    {
+          for(int k=0; k<RGB; k++){
+              image[f][j][k] = image[i][j][k];
+	         
+          }
+           f--;
+	      
+	    }
+	}
+    }
+  else if (c == 'd')
+    {
+      int s = SIZE / 2;
+
+      for (int j = 0; j < SIZE; j++)
+	{
+
+	  int f = SIZE;
+	  for (int i = 0; i < s; i++)
+	    {
+            for(int k=0; k<RGB; k++){
+                image[i][j][k] = image[f][j][k];
+            }
+	        f--;
+	    }
+	}
+    }
+  else if (c == 'r')
+    {
+      int s = SIZE / 2;
+
+      for (int i = 0; i < SIZE; i++)
+	{
+
+	  int f = SIZE;
+	  for (int j = 0; j < s; j++)
+	    {
+          for(int k=0; k<RGB; k++){
+              image[i][j][k] = image[i][f][k];
+          }
+	      f--;
+	    }
+	}
+    }
+  else if (c == 'l')
+    {
+      int s = SIZE / 2;
+
+      for (int i = 0; i < SIZE; i++)
+	{
+
+	  int f = SIZE;
+	  for (int j = 0; j < s; j++)
+	    {
+            for(int k=0; k<RGB; k++){
+                image[i][f][k] = image[i][j][k];
+            }
+          f--;
+	    }
+        
+	}
+    }
 }
