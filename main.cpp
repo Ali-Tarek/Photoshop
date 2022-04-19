@@ -597,7 +597,71 @@ void shuffle(){
 }
 
 void mirror(){
+  char c;
+  cout << "Mirror (l)eft, (r)ight, (u)pper, (d)own side? ";
+  cin >> c; // take the choose from user 
+  c = tolower(c);
 
+  if (c == 'u')
+    {
+      int s = SIZE / 2;
+
+      for (int j = 0; j < SIZE; j++)
+	{
+
+	  int f = SIZE;
+	  for (int i = 0; i < s; i++)
+	    {
+	      image[f][j] = image[i][j];
+	      f--;
+	    }
+	}
+    }
+  else if (c == 'd')
+    {
+      int s = SIZE / 2;
+
+      for (int j = 0; j < SIZE; j++)
+	{
+
+	  int f = SIZE;
+	  for (int i = 0; i < s; i++)
+	    {
+	      image[i][j] = image[f][j];
+	     f--;
+	    }
+	}
+    }
+  else if (c == 'r')
+    {
+      int s = SIZE / 2;
+
+      for (int i = 0; i < SIZE; i++)
+	{
+
+	  int f = SIZE;
+	  for (int j = 0; j < s; j++)
+	    {
+	      image[i][j] = image[i][f];
+	      f--;
+	    }
+	}
+    }
+  else if (c == 'l')
+    {
+      int s = SIZE / 2;
+
+      for (int i = 0; i < SIZE; i++)
+	{
+
+	  int f = SIZE;
+	  for (int j = 0; j < s; j++)
+	    {
+	      image[i][f] = image[i][j];
+	      f--;
+	    }
+	}
+    }
 }
 
 void detect(){
@@ -607,9 +671,14 @@ void detect(){
     // move kernel
     for(int i=0; i<SIZE-2; i++){
         for(int j=0; j<SIZE-2; j++){
+            // calculate based on sobel x matrix
             int gy = ((image[i][j]*-1) + (image[i][j+2]*1) + (image[i+1][j]*-2) + (image[i+1][j+2]*2) + (image[i+2][j] *-1) + (image[i+2][j+2]*1));
+            // calculate bsed on sobel y martix
             int gx = ((image[i][j]*-1) + (image[i][j+1]*-2) + (image[i][j+2]*-1) + (image[i+2][j]*1) + (image[i+2][j+1] *2) + (image[i+2][j+2]*1));
+
+            // add x and y 
             int total = sqrt(pow(gy, 2)+pow(gx, 2));
+            // write pixel to new image
             detectedImage[i][j] = total;
         }
     }
