@@ -597,12 +597,12 @@ void shuffle(){
 }
 
 void mirror(){
-  char c;
+  char choose;
   cout << "Mirror (l)eft, (r)ight, (u)pper, (d)own side? ";
-  cin >> c; // take the choose from user 
-  c = tolower(c);
+  cin >> choose; // take the choose from user
+  choose = tolower(choose);
 
-  if (c == 'u')
+  if (choose == 'u') // if conditional to convert the image according to user choice
     {
       int s = SIZE / 2;
 
@@ -617,7 +617,7 @@ void mirror(){
 	    }
 	}
     }
-  else if (c == 'd')
+  else if (choose == 'd')
     {
       int s = SIZE / 2;
 
@@ -632,7 +632,7 @@ void mirror(){
 	    }
 	}
     }
-  else if (c == 'r')
+  else if (choose == 'r')
     {
       int s = SIZE / 2;
 
@@ -647,7 +647,7 @@ void mirror(){
 	    }
 	}
     }
-  else if (c == 'l')
+  else if (choose == 'l')
     {
       int s = SIZE / 2;
 
