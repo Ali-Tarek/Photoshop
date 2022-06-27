@@ -4,7 +4,7 @@
 
 This project made by FCAI students in first year: Ali Tarek Mohamed - Mohamed Wael Mohamed - Omar Mohamed Gamal
 
-## A fully functional Program does some filters and edits on Gray or RGB bitmap photos
+## A fully functional Program does some filters and edits on Gray bitmap photos
 
 This project do the following filters:
 
